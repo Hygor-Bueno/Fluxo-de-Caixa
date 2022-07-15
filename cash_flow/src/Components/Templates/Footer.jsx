@@ -4,7 +4,7 @@ import './Footer.css';
 export default function Footer(props) {
     return <footer className="footer">
         <span>
-            Desenvolvido com <i className="fa fa-star text-danger"></i> por Hygor
+            <i class="fa fa-copyright" aria-hidden="true"></i> Hygor Bueno - Programador. Julho de 2022
         </span>
     </footer>
 } 

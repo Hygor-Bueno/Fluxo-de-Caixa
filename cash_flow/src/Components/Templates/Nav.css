@@ -10,7 +10,7 @@ aside.menu-area{
     padding:10px;
     font-weight: 15px;
 }
-@media(max-width:768px){
+@media(max-width:786px){
     .menu{
         display: flex;
         justify-content: space-around;
