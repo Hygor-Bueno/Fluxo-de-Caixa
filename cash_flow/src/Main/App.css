@@ -19,7 +19,10 @@
     box-sizing: border-box;
     font-family:"RobotoMono",monospace;
 }
-
+p{
+    font-weight: bold;
+    font-size:14px;
+}
 /* Layout em Grid */
 .app{
     display: grid;

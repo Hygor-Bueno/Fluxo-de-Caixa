@@ -1,5 +1,5 @@
 import React from "react";
-import 'Header.css';
+import './Header.css';
 
 export default function Header(props) {
     return (
@@ -7,7 +7,7 @@ export default function Header(props) {
             <h1 className="mt-3">
                 <i className={`fa fa-${props.icon}`}></i>{props.title}
             </h1>
-            <p className="lead text-musted"></p>
+            <p className="lead text-musted">{props.subtitle}</p>
         </header>
     )
 }
