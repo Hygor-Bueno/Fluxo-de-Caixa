@@ -1,0 +1,10 @@
+aside.logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color: var(--bg-dark);
+}
+aside.logo img{
+    padding: 2px 0px;
+    height: var(--logo-height);
+}

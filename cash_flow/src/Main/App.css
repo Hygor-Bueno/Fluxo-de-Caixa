@@ -10,9 +10,14 @@
         0 2px 46px 0 rgba(0,0,0,0.06);
 }
 
+@font-face {
+    font-family: 'RobotoMono';
+    src: url('../Assets/fonts/RobotoMono-Thin.ttf');
+  }
+
 *{
     box-sizing: border-box;
-    font-family:sans-serif
+    font-family:"RobotoMono",monospace;
 }
 
 /* Layout em Grid */
