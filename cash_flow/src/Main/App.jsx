@@ -9,10 +9,13 @@ import Nav from '../Components/Templates/Nav';
 import RootRoute from './AppRoutes';
 import Footer from '../Components/Templates/Footer';
 import ItemMenu from '../Components/ItemMenu/ItemMenu';
+// import { IndexedDB } from '../Utils/IndexedDB.js';
 
 export default function App(props){
+    // let teste = new IndexedDB();
     return (
         <BrowserRouter>
+            {/* {console.log(teste.getAllData())} */}
             <div className="app">
                 <Logo/>
                 <Nav>
