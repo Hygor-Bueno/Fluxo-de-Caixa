@@ -7,7 +7,6 @@ export default function Home() {
     var [list, setList] = useState([])
     let fetchdata = async () => {
         await teste.createDB();
-        // teste.addData();
         let list = await teste.getAllData();
         setList(list)
     }
@@ -21,6 +20,10 @@ export default function Home() {
     return (
         <Main icon="home" title="Início" subtitle="Sistema de auxílio e controle aos gastos financeiros">
             <h1>Bem Vindos ao Mercurius...</h1>
+            <hr />
+                <form>
+                    
+                </form>
             <hr />
             <div id="divTable">
                 <table id="tableHome" className="table table-reponsive">
