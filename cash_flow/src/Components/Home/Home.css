@@ -1,0 +1,22 @@
+#divTable{
+    overflow-y: auto;
+    /* height:100%; */
+    max-height: 346px;
+}
+#tableHome *{
+    padding:2px;
+}
+#tableHome thead{
+    background-color: var(--bg-dark) ;
+    color:white;
+}
+#tableHome thead > tr > th{
+    position: sticky;
+    top: 0;
+}
+#tableHome tfoot > tr > td{
+    position: sticky;
+    bottom: 0px;
+    background-color: var(--bg-dark) ;
+    color:white;
+}

@@ -7,10 +7,12 @@ export class IndexedDB {
     };
     dataList = [];
     async createDB() {
-        if (window.indexedDB) {
+        
+        if (window.indexedDB) { 
             const request = window.indexedDB.open(this.database.name, 1); //Cria o banco de dados.
             await new Promise((resolve, reject) => {
                 request.onsuccess = async (event) => {
+                    this.dataList = [];
                     resolve(request.result);
                     this.db = request.result;
                     this.outDB = 'Successed request';
@@ -25,22 +27,22 @@ export class IndexedDB {
                 request.onupgradeneeded = (event) => {
                     resolve(request.result);
                     this.db = event.target.result;
-    
+
                     const objectStorage = this.db.createObjectStore(this.database.storeName, {
                         keyPath: 'id',
                         autoIncrement: true
                     }); //objectStorage - "Tabela"
-    
+
                     objectStorage.createIndex("date", "date", { unique: false }) // Cria os index - "colunas"
                     objectStorage.createIndex("description", "description", { unique: false })
                     objectStorage.createIndex("Prohibited", "Prohibited", { unique: false })
                     objectStorage.createIndex("exit", "exit", { unique: false })
                     objectStorage.createIndex("Cashier", "Cashier", { unique: false })
-    
+
                     console.log("upgrade", event);
                     this.outDB = 'Upgraded request';
                 } //Retorna se ouver atualização na conexão
-            }).then(message=> console.log(message));
+            }).then(message => console.log(message));
 
         } else {
             console.log("no support")
@@ -52,10 +54,10 @@ export class IndexedDB {
 
         const newMoviment = {
             date: '20/07/2022',
-            description: "Vale",
-            Prohibited: "900",
-            exit: "",
-            Cashier: ""
+            description: "Luz",
+            prohibited: "",
+            exit: "100",
+            cashier: ""
         };
         objectStorage.add(newMoviment);
 
@@ -67,18 +69,21 @@ export class IndexedDB {
             console.log("Transaction error", event);
         }
     }
-    getAllData() {
-        this.dataList = [];
-        const objectStorage = this.db.transaction(this.database.storeName).objectStore(this.database.storeName);
-
-        objectStorage.openCursor().onsuccess = (event) => {
-            const cursor = event.target.result;
-            if (cursor) {
-                this.dataList.push(cursor.value)
-                cursor.continue();
+    async getAllData() {
+        let dataList = [];
+        await new Promise(async (sucesso) => {
+        const objectStorage = await this.db.transaction(this.database.storeName).objectStore(this.database.storeName);
+            objectStorage.openCursor().onsuccess = async (event) => {
+                const cursor = await event.target.result;
+                if (cursor) {
+                    dataList.push(cursor.value)
+                    cursor.continue();
+                }else{
+                    sucesso(dataList);
+                }
             }
-        }
-        return this.dataList
+        })
+        return dataList
     }
     getData(id) {
         this.dataList = [];
