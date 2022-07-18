@@ -2,7 +2,39 @@ import React, { useEffect, useState } from 'react';
 import Main from '../Templates/Main';
 import { IndexedDB } from '../../Utils/IndexedDB.js';
 import './Home.css';
+import InputForm from '../InputForm';
+import { toDay } from "../../Utils/UtilsJS.js";
+
+var inputForm = [
+    {
+        labelIput: "Descrição",
+        idInput: "descFormItem",
+        classInput: "",
+        classLabel: "col-auto my-1",
+        typeInput: "text",
+        titleInput: "Insira a descrição da movimentação.",
+        placeholderInput: "Descrição."
+    },
+    {
+        labelIput: "Valor R$ :",
+        idInput: "valueFormItem",
+        classLabel: "col-auto my-1",
+        typeInput: "number",
+        titleInput: "Insira o valor da movimentação",
+        placeholderInput: "valor"
+    },
+    {
+        labelIput: "Data:",
+        idInput: "dateFormItem",
+        classLabel: "col-auto my-1",
+        typeInput: "date",
+        titleInput: "Escolha a data da movimentação",
+        placeholderInput: "valor",
+        valueInput: toDay()
+    }
+]
 export default function Home() {
+    // console.log(today)
     let teste = new IndexedDB();
     var [list, setList] = useState([])
     let fetchdata = async () => {
@@ -21,9 +53,16 @@ export default function Home() {
         <Main icon="home" title="Início" subtitle="Sistema de auxílio e controle aos gastos financeiros">
             <h1>Bem Vindos ao Mercurius...</h1>
             <hr />
-                <form>
-                    
-                </form>
+            <form className="d-flex">
+                {inputForm.map((form, index) =>
+                    <InputForm key={`input_${index}`} {...form} />
+                )}
+                <select id="controllerFormItem" className="col-auto mx-2">
+                    <option value="prohibited">Entrada</option>
+                    <option value="exit">Saída</option>
+                </select>
+                <button className="mx-2" type="button" onClick={() => { addMoviment(list) }}>Salvar</button>
+            </form>
             <hr />
             <div id="divTable">
                 <table id="tableHome" className="table table-reponsive">
@@ -66,4 +105,27 @@ export default function Home() {
             {/* <p className="mb-0">Sistema de auxílio e controle aos gastos financeiros</p> */}
         </Main >
     )
+    function addMoviment(list) {
+        let desc, value, select;
+        
+        desc = document.getElementById("descFormItem").value;
+        value = document.getElementById("valueFormItem").value;
+        select = document.getElementById("controllerFormItem").value;
+
+        let item = maskItem();
+        item.description = desc;
+        item[select] = value;
+        console.log(item);
+        // teste.addData();
+    }
+    function maskItem(){
+        return {
+            cashier: "",
+            date: "",
+            description: "",
+            exit: "",
+            prohibited: ""
+        }
+    }
 }
+

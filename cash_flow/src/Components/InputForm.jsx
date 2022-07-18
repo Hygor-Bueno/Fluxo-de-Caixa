@@ -3,7 +3,7 @@ import React from "react";
 export default function InputForm(props){
     return(
         <span>
-            <label>{props.labelIput}</label><input id={props.idInput} type={props.typeInput} title={props.titleInput} placeholder={props.placeholderInput !== ""?props.placeholderInput:""} />
+            <label className={props.classLabel !==""? props.classLabel:""}><b>{props.labelIput}</b></label><input id={props.idInput !==""? props.idInput:""} className={props.classInput !==""? props.classInput:""} value={props.valueInput} type={props.typeInput} title={props.titleInput} placeholder={props.placeholderInput !== ""?props.placeholderInput:""} />
         </span>
     )
 }
