@@ -1,3 +1,10 @@
+select,button{
+    height: 30px;
+}
+
+/* form{
+    overflow-x: auto;
+} */
 #divTable{
     overflow-y: auto;
     max-height: 60vh;
@@ -11,11 +18,37 @@
 }
 #tableHome thead > tr > th{
     position: sticky;
-    top: 0;
+    background-color: var(--bg-dark) ;
+    top: -5px;
 }
 #tableHome tfoot > tr > td{
     position: sticky;
     bottom: 0px;
     background-color: var(--bg-dark) ;
     color:white;
+}
+
+@media (max-width: 1500px ){
+    #divTable{
+        max-height: 40vh;
+    }
+}
+
+@media(max-width: 412px){
+    *{
+        padding:0px;
+    }
+    h1{
+        font-size:20px;
+        font-weight: bold;
+    }
+    form > span,form > select{
+        margin: 2px 0px;
+    }
+    form > span > label{
+        display:none;
+    }
+    hr{
+        margin:8px 0px;
+    }
 }

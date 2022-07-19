@@ -48,23 +48,13 @@ export class IndexedDB {
             console.log("no support")
         }
     }
-    addData() {
+    addData(newMoviment) {
         const transactionAdd = this.db.transaction([this.database.storeName], 'readwrite');
         const objectStorage = transactionAdd.objectStore(this.database.storeName);
-
-        const newMoviment = {
-            date: '20/07/2022',
-            description: "Luz",
-            prohibited: "",
-            exit: "100",
-            cashier: ""
-        };
         objectStorage.add(newMoviment);
-
         transactionAdd.oncomplete = (event) => {
             console.log("Transaction completed", event);
         }
-
         transactionAdd.onerror = (event) => {
             console.log("Transaction error", event);
         }
@@ -103,7 +93,6 @@ export class IndexedDB {
 
         transaction.oncomplete = (event) => {
             console.log("Transaction completed id " + locationId, event);
-            this.getData();
         }
 
         transaction.onerror = (event) => {

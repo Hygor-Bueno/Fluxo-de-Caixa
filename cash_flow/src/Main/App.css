@@ -18,6 +18,7 @@
 *{
     box-sizing: border-box;
     font-family:"RobotoMono",monospace;
+    font-weight: bold;
 }
 p{
     font-weight: bold;
