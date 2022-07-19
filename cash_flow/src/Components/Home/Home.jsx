@@ -48,7 +48,7 @@ export default function Home() {
         await teste.createDB();
         let list = await teste.getAllData();
 
-        setNav(inputForm);
+        setNav([...inputForm]);
         setFooter(calculateList(list));
         setList(list);
     }
@@ -151,7 +151,7 @@ export default function Home() {
                             list.map((item) => (
                                 <tr key={item.id}>
                                     <th scope="row">{item.id}</th>
-                                    <td>{item.date}</td>
+                                    <td>{convertDateToBrazil(item.date)}</td>
                                     <td>{item.description}</td>
                                     <td>{item.prohibited}</td>
                                     <td>{item.exit}</td>
@@ -190,11 +190,20 @@ export default function Home() {
         let item = maskItem();
         item.description = desc;
         item[select] = value;
-        item.date = convertDateToBrazil(dateNew);
+        item.date = dateNew;
+        item.month = dateNew.split("-")[1];
+        item.year = dateNew.split("-")[0];
 
         await teste.createDB();
         teste.addData(item);
         await fetchdata();
+        clear();
+    }
+    function clear(){
+        document.getElementById("descFormItem").value="";
+        document.getElementById("valueFormItem").value="";
+        document.getElementById("controllerFormItem").value="prohibited";
+        document.getElementById("dateFormItem").value="";
     }
     function maskItem() {
         return {
@@ -202,7 +211,9 @@ export default function Home() {
             date: "",
             description: "",
             exit: "",
-            prohibited: ""
+            prohibited: "",
+            month : "",
+            year:""
         }
     }
     async function deleteItem(id) {

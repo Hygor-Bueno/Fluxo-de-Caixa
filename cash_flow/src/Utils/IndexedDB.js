@@ -35,9 +35,12 @@ export class IndexedDB {
 
                     objectStorage.createIndex("date", "date", { unique: false }) // Cria os index - "colunas"
                     objectStorage.createIndex("description", "description", { unique: false })
-                    objectStorage.createIndex("Prohibited", "Prohibited", { unique: false })
+                    objectStorage.createIndex("prohibited", "prohibited", { unique: false })
                     objectStorage.createIndex("exit", "exit", { unique: false })
-                    objectStorage.createIndex("Cashier", "Cashier", { unique: false })
+                    objectStorage.createIndex("cashier", "cashier", { unique: false })
+                    objectStorage.createIndex("month", "month", { unique: false })
+                    objectStorage.createIndex("year", "year", { unique: false })
+                    
 
                     console.log("upgrade", event);
                     this.outDB = 'Upgraded request';
