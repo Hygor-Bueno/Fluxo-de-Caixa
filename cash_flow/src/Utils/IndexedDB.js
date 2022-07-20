@@ -87,6 +87,16 @@ export class IndexedDB {
             console.log("Sucesso")
         }
     }
+    getDataMonth(month) {
+        this.dataList = [];
+        const objectStorage = this.db.transaction(this.database.storeName).objectStore(this.database.storeName);
+        const request = objectStorage.get(month);
+
+        request.onsuccess = () => {
+            console.log("Sucesso")
+        }
+    }
+
     deleteData(event) {
         const locationId = parseInt(event);
         const transaction = this.db.transaction([this.database.storeName], 'readwrite');

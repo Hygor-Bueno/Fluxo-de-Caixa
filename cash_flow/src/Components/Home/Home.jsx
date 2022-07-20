@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Main from '../Templates/Main';
 import { IndexedDB } from '../../Utils/IndexedDB.js';
 import './Home.css';
-import InputForm from '../InputForm';
-import { toDay, convertDateToBrazil } from "../../Utils/UtilsJS.js";
+import { toDay,convertDateToBrazil } from "../../Utils/UtilsJS.js";
 
 
 
 export default function Home() {
-    // console.log(today)
-    var teste = new IndexedDB();
+    var idb = new IndexedDB();
     var [list, setList] = useState([])
     var [footer, setFooter] = useState({})
     var [nav, setNav] = useState([{}])
@@ -45,8 +43,8 @@ export default function Home() {
     ]
 
     let fetchdata = async () => {
-        await teste.createDB();
-        let list = await teste.getAllData();
+        await idb.createDB();
+        let list = await idb.getAllData();
 
         setNav([...inputForm]);
         setFooter(calculateList(list));
@@ -117,7 +115,6 @@ export default function Home() {
             <hr />
             <form className="d-flex flex-column flex-sm-row align-items-sm-end col-6 col-sm-12">
                 {nav.map((form, index) =>
-                    // <InputForm key={`input_${index}`} {...form} />
                     <span key={`input_${index}`} >
                         <label className={form.classLabel !== "" ? form.classLabel : ""}>
                             <b>{form.labelIput}</b>
@@ -148,19 +145,23 @@ export default function Home() {
                     </thead>
                     <tbody>
                         {
-                            list.map((item) => (
-                                <tr key={item.id}>
-                                    <th scope="row">{item.id}</th>
-                                    <td>{convertDateToBrazil(item.date)}</td>
-                                    <td>{item.description}</td>
-                                    <td>{item.prohibited}</td>
-                                    <td>{item.exit}</td>
-                                    <td>{item.cashier}</td>
-                                    <td className="d-flex justify-content-sm-center">
-                                        <button type="button" className="btn btn-danger" title="Excluir linha" onClick={() => deleteItem(item.id)}><b>Delete</b></button>
-                                    </td>
-                                </tr>
-                            ))
+                            list.map((item) => {
+                                let element="";
+                                if (item.month === toDay().split("-")[1]) {
+                                    element = <tr key={item.id}>
+                                        <th scope="row">{item.id}</th>
+                                        <td>{convertDateToBrazil(item.date)}</td>
+                                        <td>{item.description}</td>
+                                        <td>{item.prohibited}</td>
+                                        <td>{item.exit}</td>
+                                        <td>{item.cashier}</td>
+                                        <td className="d-flex justify-content-sm-center">
+                                            <button type="button" className="btn btn-danger" title="Excluir linha" onClick={() => deleteItem(item.id)}><b>Delete</b></button>
+                                        </td>
+                                    </tr>
+                                }
+                                return element;
+                            })
                         }
                     </tbody>
                     <tfoot>
@@ -194,16 +195,16 @@ export default function Home() {
         item.month = dateNew.split("-")[1];
         item.year = dateNew.split("-")[0];
 
-        await teste.createDB();
-        teste.addData(item);
+        await idb.createDB();
+        idb.addData(item);
         await fetchdata();
         clear();
     }
-    function clear(){
-        document.getElementById("descFormItem").value="";
-        document.getElementById("valueFormItem").value="";
-        document.getElementById("controllerFormItem").value="prohibited";
-        document.getElementById("dateFormItem").value="";
+    function clear() {
+        document.getElementById("descFormItem").value = "";
+        document.getElementById("valueFormItem").value = "";
+        document.getElementById("controllerFormItem").value = "prohibited";
+        document.getElementById("dateFormItem").value = "";
     }
     function maskItem() {
         return {
@@ -212,13 +213,13 @@ export default function Home() {
             description: "",
             exit: "",
             prohibited: "",
-            month : "",
-            year:""
+            month: "",
+            year: ""
         }
     }
     async function deleteItem(id) {
-        await teste.createDB();
-        teste.deleteData(id);
+        await idb.createDB();
+        idb.deleteData(id);
         fetchdata();
     };
 }
