@@ -10,26 +10,29 @@ import Table from '../Table';
 export default function Logs(props) {
 	var idb = new IndexedDB();
 	var [data, setData] = useState([]);
-	var [list,setList] = useState([]);
-
+	var [list, setList] = useState([]);
+	var [modal, setModal] = useState({});
+	
 	let getData = async () => {
 		await idb.createDB();
 		let data = await idb.getAllData();
-		// list=data;
-		// setList(list)
+		modal = { display: "d-none alert alert-warning alert-dismissible fade show", text: "" }
+		list = data;
+		setModal(modal);
 		setData(data);
 	}
-
 	useEffect(() => {
 		getData();
 	}, []);
 
-	// useEffect(() => {
-	//     console.log(data);
-	// }, [data]);
-
 	return (
 		<Main icon="paste" title="Registro" subtitle="Verifique os registros dos seus gastos financeiros...">
+			<div id="modalPageInfo" className={modal.display} role="alert">
+				<strong>Atenção!</strong> {modal.text}
+				<button onClick={() => closeModal()} type="button" className="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
 			<h1>Registros Financeiros</h1>
 			<hr />
 			<form className="d-flex flex-column flex-sm-row align-items-sm-end col-6 col-sm-12">
@@ -48,7 +51,7 @@ export default function Logs(props) {
 				<button type="button" onClick={() => { query() }} className="btn btn-success mx-2 d-flex align-items-center">Buscar</button>
 			</form>
 			<hr />
-			{(list.length > 0) && <Table {...{list}}></Table>}
+			{(list.length > 0) && <Table {...{ list }}></Table>}
 			<p className="mb-0">Realize a verificação das suas finanças em meses anteriores...</p>
 		</Main>
 	)
@@ -73,9 +76,15 @@ export default function Logs(props) {
 		})
 		return response;
 	}
-	function query(){
-		setList(filterSelect())
-		console.log(filterSelect())
+	function query() {
+		let filter = filterSelect();
+		if (filter.length > 0) {
+			setModal({ display: 'd-none'}); 
+			setList(filter)
+		} else {
+			setModal({ display: "d-flex alert alert-warning alert-dismissible fade show",text: " Não foi possível localizar os dados."  })
+			console.log(modal)
+		}
 	}
 	function filterSelect() {
 		var year, month;
@@ -83,5 +92,9 @@ export default function Logs(props) {
 		year = document.getElementById("selectYear").value;
 		let resp = data.filter(item => item.month === month && item.year === year);
 		return resp;
+	}
+	function closeModal() {
+		setModal({ display: 'd-none'}); 
+		console.log(modal)
 	}
 }
