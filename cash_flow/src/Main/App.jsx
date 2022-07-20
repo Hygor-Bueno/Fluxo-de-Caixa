@@ -10,6 +10,7 @@ import RootRoute from './AppRoutes';
 import Footer from '../Components/Templates/Footer';
 import ItemMenu from '../Components/ItemMenu/ItemMenu';
 
+
 export default function App(props) {
     return (
         <BrowserRouter>
@@ -18,6 +19,7 @@ export default function App(props) {
                 <Nav>
                     <ItemMenu pathItem="/" classItem="fa fa-home" textItem="Início" />
                     <ItemMenu pathItem="/Logs" classItem="fa fa-paste" textItem="Registro" />
+                    <ItemMenu pathItem="/Purchases" classItem="fa fa-file" textItem="Lista  Comp." />
                 </Nav>
                 <RootRoute />
                 <Footer />
