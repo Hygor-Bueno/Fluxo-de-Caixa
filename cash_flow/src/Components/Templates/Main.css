@@ -4,7 +4,12 @@ main>div {
     max-height: 85vh;
     overflow: hidden;
 }
-
+input[type="number"]{
+    width: 120px;
+}
+span{
+    margin:0px 6px;
+}
 @media (max-width: 499px) {
     main>div {
         display: flex;

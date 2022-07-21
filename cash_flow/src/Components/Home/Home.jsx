@@ -45,7 +45,7 @@ export default function Home() {
 
     let fetchdata = async () => {
         await idb.createDB();
-        let list = await idb.getAllData();
+        let list = await idb.getAllData("cash_flow");
 
         setNav([...inputForm]);
         setFooter(calculateList(list));
@@ -111,7 +111,7 @@ export default function Home() {
                         {
                             list.map((item) => {
                                 let element="";
-                                if (item.month === toDay().split("-")[1]) {
+                                if (item.month === toDay().split("-")[1] && item.year ===toDay().split("-")[0]) {
                                     element = <tr key={item.id}>
                                         <th scope="row">{item.id}</th>
                                         <td>{convertDateToBrazil(item.date)}</td>
@@ -160,7 +160,7 @@ export default function Home() {
         item.year = dateNew.split("-")[0];
 
         await idb.createDB();
-        idb.addData(item);
+        idb.addData(item,"cash_flow");
         await fetchdata();
         clear();
     }

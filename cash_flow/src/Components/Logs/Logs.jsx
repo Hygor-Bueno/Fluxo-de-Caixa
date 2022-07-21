@@ -16,7 +16,7 @@ export default function Logs(props) {
 	
 	let getData = async () => {
 		await idb.createDB();
-		let data = await idb.getAllData();
+		let data = await idb.getAllData("cash_flow");
 		modal = { display: "d-none alert alert-warning alert-dismissible fade show", text: "" }
 		list = data;
 		setModal(modal);

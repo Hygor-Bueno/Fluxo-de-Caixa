@@ -3,11 +3,11 @@ export class IndexedDB {
     db;
     database = {
         name: "mercuriusDB",
-        storeName: "cash_flow"
+        storeName: "cash_flow",
+        storePurchase: "purchase"
     };
     dataList = [];
     async createDB() {
-        
         if (window.indexedDB) { 
             const request = window.indexedDB.open(this.database.name, 1); //Cria o banco de dados.
             await new Promise((resolve, reject) => {
@@ -40,7 +40,17 @@ export class IndexedDB {
                     objectStorage.createIndex("cashier", "cashier", { unique: false })
                     objectStorage.createIndex("month", "month", { unique: false })
                     objectStorage.createIndex("year", "year", { unique: false })
-                    
+
+                    const purchasesStorage = this.db.createObjectStore(this.database.storePurchase, {
+                        keyPath: 'id',
+                        autoIncrement: true
+                    }); //purchasesStorage - "Tabela"
+
+                    // Cria os index - "colunas"
+                    purchasesStorage.createIndex("description", "description", { unique: false })
+                    purchasesStorage.createIndex("quantity", "quantity", { unique: false })
+                    purchasesStorage.createIndex("price", "price", { unique: false })
+                    purchasesStorage.createIndex("section", "section", { unique: false })             
 
                     console.log("upgrade", event);
                     this.outDB = 'Upgraded request';
@@ -51,9 +61,9 @@ export class IndexedDB {
             console.log("no support")
         }
     }
-    addData(newMoviment) {
-        const transactionAdd = this.db.transaction([this.database.storeName], 'readwrite');
-        const objectStorage = transactionAdd.objectStore(this.database.storeName);
+    addData(newMoviment,storeName) {
+        const transactionAdd = this.db.transaction([storeName], 'readwrite');
+        const objectStorage = transactionAdd.objectStore(storeName);
         objectStorage.add(newMoviment);
         transactionAdd.oncomplete = (event) => {
             console.log("Transaction completed", event);
@@ -62,10 +72,10 @@ export class IndexedDB {
             console.log("Transaction error", event);
         }
     }
-    async getAllData() {
+    async getAllData(storeName) {
         let dataList = [];
         await new Promise(async (sucesso) => {
-        const objectStorage = await this.db.transaction(this.database.storeName).objectStore(this.database.storeName);
+        const objectStorage = await this.db.transaction(storeName).objectStore(storeName);
             objectStorage.openCursor().onsuccess = async (event) => {
                 const cursor = await event.target.result;
                 if (cursor) {
