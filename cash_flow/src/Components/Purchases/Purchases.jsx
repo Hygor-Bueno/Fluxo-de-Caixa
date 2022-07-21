@@ -3,22 +3,40 @@ import Option from '../Option'
 import Main from '../Templates/Main';
 import inputFormPurchase, { inputFooterPurchase, optionSelectFormPurchase } from './PurchasesSettings.js'
 import './Purchases.css';
-// import InputForm from '../InputForm'
+import { IndexedDB } from '../../Utils/IndexedDB';
 
 export default function Purchases(props) {
     var [inputForm, setInputForm] = useState([]);
     var [inputFooter, setInputFooter] = useState([]);
     var [optionForm, setOptionForm] = useState("default");
+    const [list,setList] = useState([]);
     var [total, setTotal] = useState(0);
+    var idb = new IndexedDB();
+
+    var maskItem = {
+        description: "",
+        quantity: "",
+        price: "",
+        section: "",
+        status: "1"
+    }
+
+
+    async function getData() {
+        await idb.createDB();
+        let data = await idb.getAllData("purchase");
+        setList(data)
+    }
 
     useEffect(() => {
+        getData();
         setInputForm(inputFormPurchase);
         setInputFooter(inputFooterPurchase);
     }, [])
 
     useEffect(() => {
-        console.log(inputForm, optionForm,total)
-    }, [inputForm, optionForm,total])
+        console.log(inputForm, optionForm, total,list)
+    }, [inputForm, optionForm, total,list])
 
     return (
         <Main icon="file" title="Lista de Compras" subtitle="Facilite suas compras e tenha sempre o controle dos seus gastos nas palmas de suas mãos">
@@ -36,6 +54,7 @@ export default function Purchases(props) {
                     }
                 </select>
                 <button type="button" className="mx-2" onClick={() => { clear(); setOptionForm("default") }}>Limpar</button>
+                <button type="button" className="mx-2" onClick={() => { addItemList()}}>Inserir</button>
             </form>
             <hr />
             <section>
@@ -46,13 +65,13 @@ export default function Purchases(props) {
                 {
                     inputFooter.map(input =>
                         <span key={input.position}>
-                            <label className={input.classLabel !== "" ? input.classLabel : ""}><b>{input.labelIput}</b></label><input onChange={e => updateField(e, inputFooter, setInputFooter)} onBlur={e => calcTotal(e.target.value) } data-position={input.position} id={input.idInput !== "" ? input.idInput : ""} className={input.classInput !== "" ? input.classInput : ""} value={input.valueInput} type={input.typeInput} title={input.titleInput} placeholder={input.placeholderInput !== "" ? input.placeholderInput : ""} disabled={input.disabledInput} />
+                            <label className={input.classLabel !== "" ? input.classLabel : ""}><b>{input.labelIput}</b></label><input onChange={e => updateField(e, inputFooter, setInputFooter)} onBlur={e => calcTotal(e.target.value)} data-position={input.position} id={input.idInput !== "" ? input.idInput : ""} className={input.classInput !== "" ? input.classInput : ""} value={input.valueInput} type={input.typeInput} title={input.titleInput} placeholder={input.placeholderInput !== "" ? input.placeholderInput : ""} disabled={input.disabledInput} />
                         </span>
                     )
                 }
                 <span>
                     <label className="col-auto my-1"><b>Valor Total:</b></label>
-                    <input  data-position="1" id="valueFormFinal" type="number" title="Insira o valor do Item" placeholder="R$ 0,00"   disabled value = {total} />
+                    <input data-position="1" id="valueFormFinal" type="number" title="Insira o valor do Item" placeholder="R$ 0,00" disabled value={total} />
                 </span>
             </footer>
         </Main>
@@ -73,12 +92,17 @@ export default function Purchases(props) {
     }
 
     function calcTotal(value) {
-        var a = parseFloat(total)+ (parseFloat(value) || 0 )
-        console.log(value,a)
+        var a = parseFloat(total) + (parseFloat(value) || 0)
+        console.log(value, a)
         setTotal(a)
     }
-    
-    // function onChange(e) {
-    //     console.log(e); // só irá emitir esse evento, ao sair do campo
-    //   }
+
+    function addItemList(){
+        maskItem.description=inputForm[0].valueInput;
+        maskItem.price=inputForm[1].valueInput;
+        maskItem.quantity=inputForm[2].valueInput;
+        maskItem.section=optionForm;
+
+       idb.addData(maskItem,"purchase")
+    }
 }

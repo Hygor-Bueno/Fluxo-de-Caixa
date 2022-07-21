@@ -51,6 +51,7 @@ export class IndexedDB {
                     purchasesStorage.createIndex("quantity", "quantity", { unique: false })
                     purchasesStorage.createIndex("price", "price", { unique: false })
                     purchasesStorage.createIndex("section", "section", { unique: false })             
+                    purchasesStorage.createIndex("status", "status", { unique: false })             
 
                     console.log("upgrade", event);
                     this.outDB = 'Upgraded request';

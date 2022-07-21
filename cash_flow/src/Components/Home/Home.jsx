@@ -52,9 +52,6 @@ export default function Home() {
         setList(list);
     }
 
-    
-
-
     useEffect(() => {
         fetchdata();
     }, []);
