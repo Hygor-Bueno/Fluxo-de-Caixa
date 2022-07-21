@@ -11,6 +11,7 @@ export default function Home() {
     var [list, setList] = useState([])
     var [footer, setFooter] = useState({})
     var [nav, setNav] = useState([{}])
+    
     var inputForm = [
         {
             position: "0",
