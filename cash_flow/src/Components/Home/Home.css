@@ -9,24 +9,7 @@ form{
     overflow-y: auto;
     max-height: 60vh;
 }
-#tableHome *{
-    padding:2px;
-}
-#tableHome thead{
-    background-color: var(--bg-dark) ;
-    color:white;
-}
-#tableHome thead > tr > th{
-    position: sticky;
-    background-color: var(--bg-dark) ;
-    top: -5px;
-}
-#tableHome tfoot > tr > td{
-    position: sticky;
-    bottom: 0px;
-    background-color: var(--bg-dark) ;
-    color:white;
-}
+
 
 @media (max-width: 1500px ){
     #divTable{

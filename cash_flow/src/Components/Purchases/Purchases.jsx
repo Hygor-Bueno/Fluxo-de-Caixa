@@ -9,7 +9,7 @@ export default function Purchases(props) {
     var [inputForm, setInputForm] = useState([]);
     var [inputFooter, setInputFooter] = useState([]);
     var [optionForm, setOptionForm] = useState("default");
-    const [list,setList] = useState([]);
+    const [list, setList] = useState([]);
     var [total, setTotal] = useState(0);
     var idb = new IndexedDB();
 
@@ -26,17 +26,17 @@ export default function Purchases(props) {
         await idb.createDB();
         let data = await idb.getAllData("purchase");
         setList(data)
+        setInputForm([...inputFormPurchase]);
     }
 
     useEffect(() => {
         getData();
-        setInputForm(inputFormPurchase);
         setInputFooter(inputFooterPurchase);
     }, [])
 
     useEffect(() => {
-        console.log(inputForm, optionForm, total,list)
-    }, [inputForm, optionForm, total,list])
+        console.log(inputForm, optionForm, total, list)
+    }, [inputForm, optionForm, total, list])
 
     return (
         <Main icon="file" title="Lista de Compras" subtitle="Facilite suas compras e tenha sempre o controle dos seus gastos nas palmas de suas mãos">
@@ -54,11 +54,11 @@ export default function Purchases(props) {
                     }
                 </select>
                 <button type="button" className="mx-2" onClick={() => { clear(); setOptionForm("default") }}>Limpar</button>
-                <button type="button" className="mx-2" onClick={() => { addItemList()}}>Inserir</button>
+                <button type="button" className="mx-2" onClick={() => { addItemList() }}>Inserir</button>
             </form>
             <hr />
             <section>
-                <h1>Aqui ficará a Lista de Compras...</h1>
+                {renderTable()}
             </section>
             <hr />
             <footer>
@@ -97,12 +97,48 @@ export default function Purchases(props) {
         setTotal(a)
     }
 
-    function addItemList(){
-        maskItem.description=inputForm[0].valueInput;
-        maskItem.price=inputForm[1].valueInput;
-        maskItem.quantity=inputForm[2].valueInput;
-        maskItem.section=optionForm;
+    async function addItemList() {
+        await idb.createDB();
+        maskItem.description = inputForm[0].valueInput;
+        maskItem.quantity = inputForm[1].valueInput;
+        maskItem.price = inputForm[2].valueInput;
+        maskItem.section = optionForm;
 
-       idb.addData(maskItem,"purchase")
+        idb.addData(maskItem, "purchase")
+        clear();
+        await getData();
+    }
+
+    function renderTable() {
+        return (
+            <table className="table  table-reponsive">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Setor</th>
+                        <th>R$ (Uni)</th>
+                        <th>QTD</th>
+                        <th>Sub. Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {renderRows()}
+                </tbody>
+            </table>
+        )
+    }
+
+    function renderRows() {
+        return (
+            list.map((item, index) =>
+                <tr key={index}>
+                    <td>{item.description}</td>
+                    <td>{item.section}</td>
+                    <td className="text-center">{parseFloat(item.price).toFixed(2)}</td>
+                    <td className="text-center">{parseFloat(item.quantity).toFixed(2)}</td>
+                    <td className="text-center">{(parseFloat(item.price)*parseFloat(item.quantity)).toFixed(2)}</td>
+                </tr>
+            )
+        )
     }
 }
