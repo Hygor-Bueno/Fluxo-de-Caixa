@@ -5,6 +5,7 @@ import { IndexedDB } from '../../Utils/IndexedDB.js';
 import optionsMonth from './LogSettings.js'
 import Option from '../Option';
 import Table from '../Table';
+import {calculateList} from '../../Utils/UtilsJS.js'
 
 
 export default function Logs(props) {
@@ -51,7 +52,7 @@ export default function Logs(props) {
 				<button type="button" onClick={() => { query() }} className="btn btn-success mx-2 d-flex align-items-center">Buscar</button>
 			</form>
 			<hr />
-			{(list.length > 0) && <Table {...{ list }}></Table>}
+			{(list.length > 0) && <Table {...{ list,footer:calculateList(list) }}></Table>}
 			<p className="mb-0">Realize a verificação das suas finanças em meses anteriores...</p>
 		</Main>
 	)

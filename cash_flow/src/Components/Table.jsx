@@ -2,6 +2,7 @@ import React from "react";
 import {convertDateToBrazil} from '../Utils/UtilsJS.js'
 
 export default function InputForm(props){
+    console.log(props)
     return(
         <table id="tableHome" className="table table-reponsive">
                     <thead>
@@ -29,7 +30,7 @@ export default function InputForm(props){
                             ))
                         }
                     </tbody>
-                    {/* <tfoot>
+                    <tfoot>
                         <tr>
                             <td>#</td>
                             <td>-</td>
@@ -38,7 +39,7 @@ export default function InputForm(props){
                             <td>{props.footer.exit}</td>
                             <td>{props.footer.cashier}</td>
                         </tr>
-                    </tfoot> */}
+                    </tfoot>
                 </table>
     )
 }
