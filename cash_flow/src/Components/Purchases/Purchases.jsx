@@ -20,23 +20,23 @@ export default function Purchases(props) {
         section: "",
         status: "1"
     }
-
-
     async function getData() {
         await idb.createDB();
         let data = await idb.getAllData("purchase");
+
         setList(data)
         setInputForm([...inputFormPurchase]);
+        setInputFooter(inputFooterPurchase);
+        subTotal(data);
     }
 
     useEffect(() => {
         getData();
-        setInputFooter(inputFooterPurchase);
     }, [])
 
-    useEffect(() => {
-        console.log(inputForm, optionForm, total, list)
-    }, [inputForm, optionForm, total, list])
+    // useEffect(() => {
+    //     console.log(inputForm, optionForm, total, list)
+    // }, [inputForm, optionForm, total, list])
 
     return (
         <Main icon="file" title="Lista de Compras" subtitle="Facilite suas compras e tenha sempre o controle dos seus gastos nas palmas de suas mãos">
@@ -73,6 +73,8 @@ export default function Purchases(props) {
                     <label className="col-auto my-1"><b>Valor Total:</b></label>
                     <input data-position="1" id="valueFormFinal" type="number" title="Insira o valor do Item" placeholder="R$ 0,00" disabled value={total} />
                 </span>
+                <button type="button" className="mx-2" onClick={() => { addItemList() }}>Incluir Gastos</button>
+                {modal()}
             </footer>
         </Main>
     )
@@ -80,6 +82,11 @@ export default function Purchases(props) {
         let position = event.target.getAttribute("data-position"), input = event.target;
         vMethods[position].valueInput = input.value
         method([...vMethods])
+    }
+    function enabledItem(e, index, key) {
+        list[index][key] = e.target.value;
+        setList([...list]);
+        subTotal(list);
     }
     function clear() {
         inputForm[0].valueInput = ""
@@ -92,9 +99,27 @@ export default function Purchases(props) {
     }
 
     function calcTotal(value) {
-        var a = parseFloat(total) + (parseFloat(value) || 0)
-        console.log(value, a)
-        setTotal(a)
+        let result = 0
+        subTotal(list)
+        if (total !== 0 && value !== "") {
+            result = (parseFloat(value) - parseFloat(total)).toFixed(2)
+        } else if (value !== 0) {
+            result = parseFloat(total).toFixed(2)
+        }
+        setTotal(result)
+    }
+
+    function subTotal(list) {
+        setTotal(0);
+        let result = 0;
+        list.forEach(item => {
+            result += parseFloat(item.price || 0) * parseFloat(item.quantity || 0)
+        })
+        if (inputFooter.length !== 0 && inputFooter[0].valueInput !== '') {
+            setTotal((parseFloat(inputFooter[0].valueInput) - parseFloat(result)).toFixed(2))
+        } else {
+            setTotal(result.toFixed(2))
+        }
     }
 
     async function addItemList() {
@@ -107,6 +132,7 @@ export default function Purchases(props) {
         idb.addData(maskItem, "purchase")
         clear();
         await getData();
+
     }
 
     function renderTable() {
@@ -134,11 +160,49 @@ export default function Purchases(props) {
                 <tr key={index}>
                     <td>{item.description}</td>
                     <td>{item.section}</td>
-                    <td className="text-center">{parseFloat(item.price).toFixed(2)}</td>
-                    <td className="text-center">{parseFloat(item.quantity).toFixed(2)}</td>
-                    <td className="text-center">{(parseFloat(item.price)*parseFloat(item.quantity)).toFixed(2)}</td>
+                    <td className="text-center"><input type="number" className="text-center p-0" onBlur={() => { update(item) }} onChange={(e) => enabledItem(e, index, 'price')} value={item.price} /></td>
+                    <td className="text-center"><input type="number" className="text-center p-0" onBlur={() => { update(item) }} onChange={(e) => enabledItem(e, index, 'quantity')} value={item.quantity} /></td>
+                    <td className="text-center subtotal">{(parseFloat(item.price || 0) * parseFloat(item.quantity || 0)).toFixed(2)}</td>
                 </tr>
             )
+        )
+    }
+    async function update(item) {
+        await idb.createDB();
+        idb.update(item, "purchase")
+        console.log(item);
+    }
+    function registerPurchases() {
+
+    }
+    function modal() {
+        return (
+            <div>
+                <button type="button" id="openModalButton" className="btn btn-primary" data-toggle="modal" onClick={() => document.getElementById('ModalConfirm').setAttribute("style", "opacity: 1;display: block;background: rgba(0,0,0,.2);")} data-target="#exampleModalCenter">
+                    Launch demo modal
+                </button>
+                <div className="modal fade" id="ModalConfirm" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" >Registrar compra no fluxo de caixa?</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <label>Descrição do Gasto:</label> <input type="text"  /> 
+                                <label>Total do gastos: R${total}</label>     
+                                <label>Tipo de movimentação: Saída</label>   
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-primary">Cadastrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         )
     }
 }

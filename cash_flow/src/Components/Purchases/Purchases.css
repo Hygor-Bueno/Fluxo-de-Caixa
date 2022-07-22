@@ -1,3 +1,4 @@
-*{
-    /* background-color: red; */
+#ModalConfirm button,#openModalButton{
+    display:flex;
+    align-items:center;
 }

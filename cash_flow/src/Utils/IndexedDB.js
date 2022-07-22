@@ -8,7 +8,7 @@ export class IndexedDB {
     };
     dataList = [];
     async createDB() {
-        if (window.indexedDB) { 
+        if (window.indexedDB) {
             const request = window.indexedDB.open(this.database.name, 1); //Cria o banco de dados.
             await new Promise((resolve, reject) => {
                 request.onsuccess = async (event) => {
@@ -50,8 +50,8 @@ export class IndexedDB {
                     purchasesStorage.createIndex("description", "description", { unique: false })
                     purchasesStorage.createIndex("quantity", "quantity", { unique: false })
                     purchasesStorage.createIndex("price", "price", { unique: false })
-                    purchasesStorage.createIndex("section", "section", { unique: false })             
-                    purchasesStorage.createIndex("status", "status", { unique: false })             
+                    purchasesStorage.createIndex("section", "section", { unique: false })
+                    purchasesStorage.createIndex("status", "status", { unique: false })
 
                     console.log("upgrade", event);
                     this.outDB = 'Upgraded request';
@@ -62,7 +62,7 @@ export class IndexedDB {
             console.log("no support")
         }
     }
-    addData(newMoviment,storeName) {
+    addData(newMoviment, storeName) {
         const transactionAdd = this.db.transaction([storeName], 'readwrite');
         const objectStorage = transactionAdd.objectStore(storeName);
         objectStorage.add(newMoviment);
@@ -73,16 +73,31 @@ export class IndexedDB {
             console.log("Transaction error", event);
         }
     }
+    update(userObject,storeName) {
+        //console.log('adding entry: '+entryTxt);
+        
+        const transactionAdd = this.db.transaction([storeName], 'readwrite');
+        const objectStorage = transactionAdd.objectStore(storeName);
+        objectStorage.put(userObject);
+
+        transactionAdd.onsuccess = function (e) {
+            // phodaDB.indexedDB.getAllEntries();
+            console.log('Success adding: ' + e);
+        };
+        transactionAdd.onerror = function (e) {
+            console.log('Error adding: ' + e);
+        };
+    };
     async getAllData(storeName) {
         let dataList = [];
         await new Promise(async (sucesso) => {
-        const objectStorage = await this.db.transaction(storeName).objectStore(storeName);
+            const objectStorage = await this.db.transaction(storeName).objectStore(storeName);
             objectStorage.openCursor().onsuccess = async (event) => {
                 const cursor = await event.target.result;
                 if (cursor) {
                     dataList.push(cursor.value)
                     cursor.continue();
-                }else{
+                } else {
                     sucesso(dataList);
                 }
             }
