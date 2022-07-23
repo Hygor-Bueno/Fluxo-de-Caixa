@@ -4,6 +4,7 @@ import Main from '../Templates/Main';
 import inputFormPurchase, { inputFooterPurchase, optionSelectFormPurchase } from './PurchasesSettings.js'
 import './Purchases.css';
 import { IndexedDB } from '../../Utils/IndexedDB';
+import { toDay } from '../../Utils/UtilsJS.js'
 
 export default function Purchases(props) {
     var [inputForm, setInputForm] = useState([]);
@@ -20,11 +21,20 @@ export default function Purchases(props) {
         section: "",
         status: "1"
     }
+    var maskRegister = {
+        cashier: "",
+        date: "",
+        description: "",
+        exit: "",
+        prohibited: "",
+        month: "",
+        year: ""
+    }
     async function getData() {
         await idb.createDB();
         let data = await idb.getAllData("purchase");
 
-        setList(data)
+        setList(data);
         setInputForm([...inputFormPurchase]);
         setInputFooter(inputFooterPurchase);
         subTotal(data);
@@ -33,11 +43,9 @@ export default function Purchases(props) {
     useEffect(() => {
         getData();
     }, [])
-
     // useEffect(() => {
     //     console.log(inputForm, optionForm, total, list)
     // }, [inputForm, optionForm, total, list])
-
     return (
         <Main icon="file" title="Lista de Compras" subtitle="Facilite suas compras e tenha sempre o controle dos seus gastos nas palmas de suas mãos">
             <h1>Bem vindo a lista de compras</h1>
@@ -73,7 +81,9 @@ export default function Purchases(props) {
                     <label className="col-auto my-1"><b>Valor Total:</b></label>
                     <input data-position="1" id="valueFormFinal" type="number" title="Insira o valor do Item" placeholder="R$ 0,00" disabled value={total} />
                 </span>
-                <button type="button" className="mx-2" onClick={() => { addItemList() }}>Incluir Gastos</button>
+                <button type="button" id="openModalButton" className="btn" data-toggle="modal" onClick={() => document.getElementById('ModalConfirm').setAttribute("style", "opacity: 1;display: block;background: rgba(0,0,0,.2);")} >
+                    <b>Registrar</b>
+                </button>
                 {modal()}
             </footer>
         </Main>
@@ -109,17 +119,23 @@ export default function Purchases(props) {
         setTotal(result)
     }
 
-    function subTotal(list) {
+    function subTotal() {
         setTotal(0);
-        let result = 0;
-        list.forEach(item => {
-            result += parseFloat(item.price || 0) * parseFloat(item.quantity || 0)
-        })
+        let result =calcList();
         if (inputFooter.length !== 0 && inputFooter[0].valueInput !== '') {
             setTotal((parseFloat(inputFooter[0].valueInput) - parseFloat(result)).toFixed(2))
         } else {
             setTotal(result.toFixed(2))
         }
+    }
+    function calcList(){
+        console.log(list)
+        let result = 0;
+        list.forEach(item => {
+            result += parseFloat(item.price || 0) * parseFloat(item.quantity || 0)
+        })
+        
+        return result;
     }
 
     async function addItemList() {
@@ -132,7 +148,6 @@ export default function Purchases(props) {
         idb.addData(maskItem, "purchase")
         clear();
         await getData();
-
     }
 
     function renderTable() {
@@ -145,6 +160,7 @@ export default function Purchases(props) {
                         <th>R$ (Uni)</th>
                         <th>QTD</th>
                         <th>Sub. Total</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,7 +179,10 @@ export default function Purchases(props) {
                     <td className="text-center"><input type="number" className="text-center p-0" onBlur={() => { update(item) }} onChange={(e) => enabledItem(e, index, 'price')} value={item.price} /></td>
                     <td className="text-center"><input type="number" className="text-center p-0" onBlur={() => { update(item) }} onChange={(e) => enabledItem(e, index, 'quantity')} value={item.quantity} /></td>
                     <td className="text-center subtotal">{(parseFloat(item.price || 0) * parseFloat(item.quantity || 0)).toFixed(2)}</td>
-                </tr>
+                    <td id="celButton">
+                        <button className="btn-danger" onClick={() => {deleteForID(item.id); getData()}}> Deletar</button>
+                    </td>
+                </tr >
             )
         )
     }
@@ -172,37 +191,56 @@ export default function Purchases(props) {
         idb.update(item, "purchase")
         console.log(item);
     }
-    function registerPurchases() {
 
+    async function registerPurchases() {
+        let input = document.getElementById("descriptionModalInput");
+        let item = maskRegister;
+        item.description = input.value;
+        item.exit = calcList();
+        item.date = toDay();
+        item.month = toDay().split("-")[1];
+        item.year = toDay().split("-")[0];
+
+        await idb.createDB();
+        await idb.addData(item, "cash_flow");
+        await clearListDB()
+        closeModal();
+    }
+    async function clearListDB() {
+        list.forEach(async(item) => {
+            await deleteForID(item.id)
+        })
+        getData();
+    }
+    async function deleteForID(id) {
+        await idb.createDB();
+        idb.deleteData("purchase", id)
     }
     function modal() {
         return (
             <div>
-                <button type="button" id="openModalButton" className="btn btn-primary" data-toggle="modal" onClick={() => document.getElementById('ModalConfirm').setAttribute("style", "opacity: 1;display: block;background: rgba(0,0,0,.2);")} data-target="#exampleModalCenter">
-                    Launch demo modal
-                </button>
                 <div className="modal fade" id="ModalConfirm" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" >Registrar compra no fluxo de caixa?</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <h5 className="modal-title" ><b>Registrar compra no fluxo de caixa?</b></h5>
                             </div>
                             <div className="modal-body">
-                                <label>Descrição do Gasto:</label> <input type="text"  /> 
-                                <label>Total do gastos: R${total}</label>     
-                                <label>Tipo de movimentação: Saída</label>   
+                                <label>Descrição do Gasto:</label> <input id="descriptionModalInput" type="text" />
+                                <label>Total do gastos: R${calcList()}</label>
+                                <label>Tipo de movimentação: Saída</label>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                                <button type="button" className="btn btn-primary">Cadastrar</button>
+                                <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => closeModal()}><b>Cancelar</b></button>
+                                <button type="button" className="btn btn-success" onClick={() => registerPurchases()}><b>Cadastrar</b></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         )
+    }
+    function closeModal() {
+        document.getElementById('ModalConfirm').setAttribute("style", "opacity: 0;display: none;background: rgba(0,0,0,.2);")
     }
 }

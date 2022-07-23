@@ -18,7 +18,6 @@ export class IndexedDB {
                     this.outDB = 'Successed request';
                 } //Retorna se ouver sucesso na conexão
 
-
                 request.onerror = (event) => {
                     reject(event);
                     this.outDB = 'Errr request';
@@ -62,20 +61,23 @@ export class IndexedDB {
             console.log("no support")
         }
     }
-    addData(newMoviment, storeName) {
-        const transactionAdd = this.db.transaction([storeName], 'readwrite');
-        const objectStorage = transactionAdd.objectStore(storeName);
-        objectStorage.add(newMoviment);
-        transactionAdd.oncomplete = (event) => {
-            console.log("Transaction completed", event);
-        }
-        transactionAdd.onerror = (event) => {
-            console.log("Transaction error", event);
-        }
+    async addData(newMoviment, storeName) {
+        await new Promise(async (resolve, reject) => {
+            const transactionAdd = this.db.transaction([storeName], 'readwrite');
+            const objectStorage = transactionAdd.objectStore(storeName);
+            objectStorage.add(newMoviment);
+            transactionAdd.oncomplete = (event) => {
+                console.log("Transaction completed", event);
+                resolve("Success")
+            }
+            transactionAdd.onerror = (event) => {
+                console.log("Transaction error", event);
+                reject("Failed to add")
+            }
+        })
     }
-    update(userObject,storeName) {
+    update(userObject, storeName) {
         //console.log('adding entry: '+entryTxt);
-        
         const transactionAdd = this.db.transaction([storeName], 'readwrite');
         const objectStorage = transactionAdd.objectStore(storeName);
         objectStorage.put(userObject);
@@ -104,6 +106,7 @@ export class IndexedDB {
         })
         return dataList
     }
+
     getData(id) {
         this.dataList = [];
         const objectStorage = this.db.transaction(this.database.storeName).objectStore(this.database.storeName);
@@ -123,10 +126,10 @@ export class IndexedDB {
         }
     }
 
-    deleteData(event) {
+    deleteData(storeName, event) {
         const locationId = parseInt(event);
-        const transaction = this.db.transaction([this.database.storeName], 'readwrite');
-        const objectStorage = transaction.objectStore(this.database.storeName);
+        const transaction = this.db.transaction([storeName], 'readwrite');
+        const objectStorage = transaction.objectStore(storeName);
 
         objectStorage.delete(event);
 

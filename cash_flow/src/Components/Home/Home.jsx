@@ -117,7 +117,7 @@ export default function Home() {
                                         <td>{item.exit}</td>
                                         <td>{item.cashier}</td>
                                         <td className="d-flex justify-content-sm-center">
-                                            <button type="button" className="btn btn-danger" title="Excluir linha" onClick={() => deleteItem(item.id)}><b>Delete</b></button>
+                                            <button type="button" className="btn btn-danger" title="Excluir linha" onClick={() => deleteItem(item.id)}><b>Deletar</b></button>
                                         </td>
                                     </tr>
                                 }
@@ -130,9 +130,9 @@ export default function Home() {
                             <td>#</td>
                             <td>-</td>
                             <td>Totais</td>
-                            <td>{footer.prohibited}</td>
-                            <td>{footer.exit}</td>
-                            <td>{footer.cashier}</td>
+                            <td>{parseFloat(footer.prohibited).toFixed(2)}</td>
+                            <td>{parseFloat(footer.exit).toFixed(2)}</td>
+                            <td>{parseFloat(footer.cashier).toFixed(2)}</td>
                             <td></td>
                         </tr>
                     </tfoot>
