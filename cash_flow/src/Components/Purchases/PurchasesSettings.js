@@ -109,6 +109,12 @@ export var optionSelectFormPurchase=[
         defaultOption:false,
         valueOption:"Açougue",
         textOption:"Açougue"
+    },
+    {
+        hiddenOption: false,
+        defaultOption:false,
+        valueOption:"Outros",
+        textOption:"Outros"
     }
 ]
 

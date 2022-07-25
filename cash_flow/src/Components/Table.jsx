@@ -13,7 +13,6 @@ export default function InputForm(props){
                             <th scope="col">Entrada</th>
                             <th scope="col">Saída</th>
                             <th scope="col">Caixa</th>
-                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>

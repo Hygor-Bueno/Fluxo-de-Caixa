@@ -35,6 +35,7 @@ export function calculateList(list) {
 function calculate(items, key) {
     let calc = 0;
     let object = {};
+    console.log(items, key)
     items.forEach(item => {
         calc += parseFloat(item[key]);
     })

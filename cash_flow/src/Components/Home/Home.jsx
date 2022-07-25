@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Main from '../Templates/Main';
 import { IndexedDB } from '../../Utils/IndexedDB.js';
 import './Home.css';
-import { toDay,convertDateToBrazil } from "../../Utils/UtilsJS.js";
-import {calculateList} from '../../Utils/UtilsJS.js'
+import { toDay, convertDateToBrazil } from "../../Utils/UtilsJS.js";
+import { calculateList } from '../../Utils/UtilsJS.js'
 
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
     var [list, setList] = useState([])
     var [footer, setFooter] = useState({})
     var [nav, setNav] = useState([{}])
-    
+
     var inputForm = [
         {
             position: "0",
@@ -46,7 +46,7 @@ export default function Home() {
     let fetchdata = async () => {
         await idb.createDB();
         let list = await idb.getAllData("cash_flow");
-
+        list = currentMonthList(sortByDate(list))
         setNav([...inputForm]);
         setFooter(calculateList(list));
         setList(list);
@@ -107,8 +107,7 @@ export default function Home() {
                     <tbody>
                         {
                             list.map((item) => {
-                                let element="";
-                                if (item.month === toDay().split("-")[1] && item.year ===toDay().split("-")[0]) {
+                                let element = "";  
                                     element = <tr key={item.id}>
                                         <th scope="row">{item.id}</th>
                                         <td>{convertDateToBrazil(item.date)}</td>
@@ -120,7 +119,6 @@ export default function Home() {
                                             <button type="button" className="btn btn-danger" title="Excluir linha" onClick={() => deleteItem(item.id)}><b>Deletar</b></button>
                                         </td>
                                     </tr>
-                                }
                                 return element;
                             })
                         }
@@ -141,6 +139,11 @@ export default function Home() {
             <p className="mb-0">Sistema de auxílio e controle aos gastos financeiros.</p>
         </Main >
     )
+
+    function currentMonthList(list){
+        let result = list.filter(item=> item.month === toDay().split("-")[1] && item.year === toDay().split("-")[0]);
+        return result;
+    }
     async function addMoviment() {
         let desc, value, select, dateNew;
 
@@ -157,7 +160,7 @@ export default function Home() {
         item.year = dateNew.split("-")[0];
 
         await idb.createDB();
-        idb.addData(item,"cash_flow");
+        idb.addData(item, "cash_flow");
         await fetchdata();
         clear();
     }
@@ -180,8 +183,21 @@ export default function Home() {
     }
     async function deleteItem(id) {
         await idb.createDB();
-        idb.deleteData(id);
+        idb.deleteData("cash_flow",id);
         fetchdata();
     };
+    function sortByDate(list) {
+        list.sort(function (a, b) {
+            if (a.date > b.date) {
+                return 1;
+            }
+            if (a.date < b.date) {
+                return -1;
+            }
+            // a must be equal to b
+            return 0;
+        })
+        return list;
+    }
 }
 

@@ -34,7 +34,7 @@ export default function Purchases(props) {
         await idb.createDB();
         let data = await idb.getAllData("purchase");
 
-        setList(data);
+        setList(sortBySection(data));
         setInputForm([...inputFormPurchase]);
         setInputFooter(inputFooterPurchase);
         subTotal(data);
@@ -42,10 +42,8 @@ export default function Purchases(props) {
 
     useEffect(() => {
         getData();
-    }, [])
-    // useEffect(() => {
-    //     console.log(inputForm, optionForm, total, list)
-    // }, [inputForm, optionForm, total, list])
+    }, []);
+
     return (
         <Main icon="file" title="Lista de Compras" subtitle="Facilite suas compras e tenha sempre o controle dos seus gastos nas palmas de suas mãos">
             <h1>Bem vindo a lista de compras</h1>
@@ -119,23 +117,25 @@ export default function Purchases(props) {
         setTotal(result)
     }
 
-    function subTotal() {
+    function subTotal(list) {
         setTotal(0);
-        let result =calcList();
+        let result = calcList(list);
         if (inputFooter.length !== 0 && inputFooter[0].valueInput !== '') {
             setTotal((parseFloat(inputFooter[0].valueInput) - parseFloat(result)).toFixed(2))
         } else {
             setTotal(result.toFixed(2))
         }
     }
-    function calcList(){
-        console.log(list)
-        let result = 0;
-        list.forEach(item => {
-            result += parseFloat(item.price || 0) * parseFloat(item.quantity || 0)
-        })
-        
-        return result;
+    function calcList(newList) {
+        if (newList) {
+
+            let result = 0;
+            newList.forEach(item => {
+                result += parseFloat(item.price || 0) * parseFloat(item.quantity || 0)
+            })
+
+            return result;
+        }
     }
 
     async function addItemList() {
@@ -180,7 +180,7 @@ export default function Purchases(props) {
                     <td className="text-center"><input type="number" className="text-center p-0" onBlur={() => { update(item) }} onChange={(e) => enabledItem(e, index, 'quantity')} value={item.quantity} /></td>
                     <td className="text-center subtotal">{(parseFloat(item.price || 0) * parseFloat(item.quantity || 0)).toFixed(2)}</td>
                     <td id="celButton">
-                        <button className="btn-danger" onClick={() => {deleteForID(item.id); getData()}}> Deletar</button>
+                        <button className="btn-danger" onClick={() => { deleteForID(item.id); getData() }}> Deletar</button>
                     </td>
                 </tr >
             )
@@ -196,7 +196,7 @@ export default function Purchases(props) {
         let input = document.getElementById("descriptionModalInput");
         let item = maskRegister;
         item.description = input.value;
-        item.exit = calcList();
+        item.exit = calcList(list);
         item.date = toDay();
         item.month = toDay().split("-")[1];
         item.year = toDay().split("-")[0];
@@ -207,7 +207,7 @@ export default function Purchases(props) {
         closeModal();
     }
     async function clearListDB() {
-        list.forEach(async(item) => {
+        list.forEach(async (item) => {
             await deleteForID(item.id)
         })
         getData();
@@ -226,9 +226,9 @@ export default function Purchases(props) {
                                 <h5 className="modal-title" ><b>Registrar compra no fluxo de caixa?</b></h5>
                             </div>
                             <div className="modal-body">
-                                <label>Descrição do Gasto:</label> <input id="descriptionModalInput" type="text" />
-                                <label>Total do gastos: R${calcList()}</label>
-                                <label>Tipo de movimentação: Saída</label>
+                                <label>Descrição do Gasto:</label> <input id="descriptionModalInput" type="text" /><br />
+                                <label>Total do gastos: R$ {calcList(list)}</label><br />
+                                <label>Tipo de movimentação: Saída</label><br />
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => closeModal()}><b>Cancelar</b></button>
@@ -242,5 +242,19 @@ export default function Purchases(props) {
     }
     function closeModal() {
         document.getElementById('ModalConfirm').setAttribute("style", "opacity: 0;display: none;background: rgba(0,0,0,.2);")
+    }
+    function sortBySection(list) {
+        list.sort(function (a, b) {
+            if (a.section > b.section) {
+                return 1;
+            }
+            if (a.section < b.section) {
+                return -1;
+            }
+            // a must be equal to b
+            return 0;
+        })
+        console.log(list)
+        return list;
     }
 }
