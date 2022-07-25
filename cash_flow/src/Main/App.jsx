@@ -17,9 +17,9 @@ export default function App(props) {
             <div className="app">
                 <Logo />
                 <Nav>
-                    <ItemMenu pathItem="/" classItem="fa fa-home" textItem="Início" />
-                    <ItemMenu pathItem="/Logs" classItem="fa fa-paste" textItem="Registro" />
-                    <ItemMenu pathItem="/Purchases" classItem="fa fa-file" textItem="Lista  Comp." />
+                    <ItemMenu pathItem="index.html/" classItem="fa fa-home" textItem="Início" />
+                    <ItemMenu pathItem="index.html/Logs" classItem="fa fa-paste" textItem="Registro" />
+                    <ItemMenu pathItem="index.html/Purchases" classItem="fa fa-file" textItem="Lista  Comp." />
                 </Nav>
                 <RootRoute />
                 <Footer />
